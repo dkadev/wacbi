@@ -27,3 +27,4 @@ npm-debug.log*
 next-env.d.ts
 
 venv/
+.aider*
