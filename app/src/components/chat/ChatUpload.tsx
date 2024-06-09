@@ -15,7 +15,27 @@ import { Input } from "@/components/ui/input"
 
 const ChatUpload: React.FC = () => {
 
-    // Upload file code here
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (fileInputRef.current && fileInputRef.current.files) {
+            const formData = new FormData();
+            formData.append('file', fileInputRef.current.files[0]);
+
+            try {
+                const response = await fetch('http://localhost:8080/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.text();
+                console.log(result); // Log the response from the server
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
+        }
+    };
 
     return (
         <Dialog>
@@ -31,9 +51,9 @@ const ChatUpload: React.FC = () => {
                         Drag and drop a .zip file containing your
                         messages here.
                     </DialogDescription>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className="w-full gap-1.5 flex h-[150px] items-center justify-center rounded-md border border-dashed text-sm my-2">
-                            <Input className="border-0" type="file" />
+                            <Input className="border-0" type="file" ref={fileInputRef}/>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             Supported formats: .zip
