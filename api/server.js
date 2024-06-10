@@ -23,8 +23,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function createDefaultCollection() {
     try {
         await client.connect();
-        const database = client.db("mydatabase");
-        const collection = database.collection("chats");
+        const database = client.db("wacbidb");
 
         // Check if the collection exists
         const collections = await database.listCollections({ name: "chats" }).toArray();
