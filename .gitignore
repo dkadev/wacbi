@@ -19,6 +19,7 @@ npm-debug.log*
 
 # local env files
 .env*.local
+.env
 
 # vercel
 .vercel
@@ -29,3 +30,7 @@ next-env.d.ts
 
 venv/
 .aider*
+
+# mongodb
+*.log
+mongo/*
