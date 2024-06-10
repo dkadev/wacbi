@@ -1,31 +1,19 @@
 const path = require("path");
 const AdmZip = require("adm-zip");
-const { MongoClient } = require("mongodb");
-require("dotenv").config();
-
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
 
 const getRoot = (req, res) => {
     res.send("Hello, this is the root of the API!");
 };
 
 const getChats = async (req, res) => {
+    const database = req.app.locals.db;
     try {
-        await client.connect();
-        const database = client.db("wacbidb");
         const collection = database.collection("chats");
-
         const chats = await collection.find({}).toArray();
         res.json(chats);
     } catch (error) {
         console.error("Error fetching chats from MongoDB:", error);
         res.status(500).send("Error fetching chats from MongoDB.");
-    } finally {
-        await client.close();
     }
 };
 
@@ -98,20 +86,15 @@ const uploadChat = async (req, res) => {
         messages: messages,
     };
 
+    const database = req.app.locals.db;
     try {
-        await client.connect();
-        const database = client.db("wacbidb");
         const collection = database.collection("chats");
-
         await collection.insertOne(chatDataForDB);
         console.log("Chat data inserted into MongoDB.");
-
         res.json(chatDataForDB);
     } catch (error) {
         console.error("Error inserting chat data into MongoDB:", error);
         res.status(500).send("Error inserting chat data into MongoDB.");
-    } finally {
-        await client.close();
     }
 };
 
