@@ -28,8 +28,7 @@ const uploadChat = (req, res) => {
 
     const chatData = chatFile.getData().toString("utf8")
     const chatName = path.basename(req.file.originalname, path.extname(req.file.originalname))
-    const messagePattern =
-        /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/
+    const messagePattern = /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/m
     const lines = chatData.split("\n")
     const messages = []
     let currentMessage = null
