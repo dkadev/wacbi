@@ -17,6 +17,7 @@ const uploadChat = (req, res) => {
     let chatFile = null
 
     zipEntries.forEach((entry) => {
+        console.log("Entry found in zip:", entry.entryName)
         if (entry.entryName === "_chat.txt") {
             chatFile = entry
         }
