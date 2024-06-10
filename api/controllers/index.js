@@ -27,20 +27,32 @@ const uploadChat = (req, res) => {
   }
 
   const chatData = chatFile.getData().toString('utf8');
+  const messagePattern = /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/;
   const lines = chatData.split('\n');
   const messages = [];
+  let currentMessage = null;
 
-  for (let i = 0; i < lines.length && messages.length < 10; i++) {
-    const line = lines[i];
-    const match = line.match(/^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/);
+  lines.forEach(line => {
+    const match = line.match(messagePattern);
     if (match) {
-      messages.push({
+      if (currentMessage) {
+        messages.push(currentMessage);
+      }
+      currentMessage = {
         date: `${match[1]} ${match[2]}`,
         author: match[3],
         content: match[4]
-      });
+      };
+    } else if (currentMessage) {
+      currentMessage.content += `\n${line}`;
     }
+  });
+
+  if (currentMessage) {
+    messages.push(currentMessage);
   }
+
+  res.json(messages.slice(0, 10));
 
   res.json(messages);
 };
