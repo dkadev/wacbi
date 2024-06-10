@@ -1,63 +1,62 @@
-const fs = require('fs');
-const path = require('path');
-const AdmZip = require('adm-zip');
+const fs = require("fs")
+const path = require("path")
+const AdmZip = require("adm-zip")
 
 const getRoot = (req, res) => {
-  res.send('Hello, this is the root of the API!');
-};
+    res.send("Hello, this is the root of the API!")
+}
 
 const uploadChat = (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
-
-  const zip = new AdmZip(req.file.path);
-  const zipEntries = zip.getEntries();
-
-  let chatFile = null;
-
-  zipEntries.forEach((entry) => {
-    if (entry.entryName === '_chat.txt') {
-      chatFile = entry;
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.")
     }
-  });
 
-  if (!chatFile) {
-    return res.status(400).send('_chat.txt not found in the zip file.');
-  }
+    const zip = new AdmZip(req.file.path)
+    const zipEntries = zip.getEntries()
 
-  const chatData = chatFile.getData().toString('utf8');
-  const messagePattern = /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/;
-  const lines = chatData.split('\n');
-  const messages = [];
-  let currentMessage = null;
+    let chatFile = null
 
-  lines.forEach(line => {
-    const match = line.match(messagePattern);
-    if (match) {
-      if (currentMessage) {
-        messages.push(currentMessage);
-      }
-      currentMessage = {
-        date: `${match[1]} ${match[2]}`,
-        author: match[3],
-        content: match[4]
-      };
-    } else if (currentMessage) {
-      currentMessage.content += `\n${line}`;
+    zipEntries.forEach((entry) => {
+        if (entry.entryName === "_chat.txt") {
+            chatFile = entry
+        }
+    })
+
+    if (!chatFile) {
+        return res.status(400).send("_chat.txt not found in the zip file.")
     }
-  });
 
-  if (currentMessage) {
-    messages.push(currentMessage);
-  }
+    const chatData = chatFile.getData().toString("utf8")
+    const messagePattern =
+        /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/
+    const lines = chatData.split("\n")
+    const messages = []
+    let currentMessage = null
 
-  res.json(messages.slice(0, 10));
+    lines.forEach((line) => {
+        const match = line.match(messagePattern)
+        if (match) {
+            if (currentMessage) {
+                messages.push(currentMessage)
+            }
+            currentMessage = {
+                date: `${match[1]} ${match[2]}`,
+                author: match[3],
+                content: match[4],
+            }
+        } else if (currentMessage) {
+            currentMessage.content += `\n${line}`
+        }
+    })
 
-  res.json(messages);
-};
+    if (currentMessage) {
+        messages.push(currentMessage)
+    }
+
+    res.json(messages.slice(0, 10))
+}
 
 module.exports = {
-  getRoot,
-  uploadChat,
-};
+    getRoot,
+    uploadChat,
+}
