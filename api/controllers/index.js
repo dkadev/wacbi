@@ -10,7 +10,21 @@ const getRoot = (req, res) => {
     res.send("Hello, this is the root of the API!")
 }
 
-const uploadChat = async (req, res) => {
+const getChats = async (req, res) => {
+    try {
+        await client.connect();
+        const database = client.db("wacbidb");
+        const collection = database.collection("chats");
+
+        const chats = await collection.find({}).toArray();
+        res.json(chats);
+    } catch (error) {
+        console.error("Error fetching chats from MongoDB:", error);
+        res.status(500).send("Error fetching chats from MongoDB.");
+    } finally {
+        await client.close();
+    }
+}
     if (!req.file) {
         return res.status(400).send("No file uploaded.")
     }
@@ -68,7 +82,17 @@ const uploadChat = async (req, res) => {
         messages.push(currentMessage)
     }
 
+    const dateFirstMessage = messages.length > 0 ? messages[0].date : null;
+    const dateLastMessage = messages.length > 0 ? messages[messages.length - 1].date : null;
+    const totalMessages = messages.length;
+    const totalAttachments = messages.filter(msg => msg.url).length;
+
     const chatDataForDB = {
+        chatName: chatName,
+        dateFirstMessage: dateFirstMessage,
+        dateLastMessage: dateLastMessage,
+        totalMessages: totalMessages,
+        totalAttachments: totalAttachments,
         chatName: chatName,
         messages: messages
     }
@@ -92,5 +116,7 @@ const uploadChat = async (req, res) => {
 
 module.exports = {
     getRoot,
+    getRoot,
     uploadChat,
+    getChats,
 }
