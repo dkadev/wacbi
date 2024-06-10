@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getRoot, uploadChat } = require('../controllers');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage()});
 
 router.get('/', getRoot);
 
