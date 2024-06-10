@@ -25,6 +25,7 @@ const getChats = async (req, res) => {
         await client.close();
     }
 }
+
 const uploadChat = async (req, res) => {
     if (!req.file) {
         return res.status(400).send("No file uploaded.");
