@@ -4,11 +4,14 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 const getRoot = (req, res) => {
-    res.send("Hello, this is the root of the API!")
-}
+    res.send("Hello, this is the root of the API!");
+};
 
 const getChats = async (req, res) => {
     try {
@@ -24,7 +27,7 @@ const getChats = async (req, res) => {
     } finally {
         await client.close();
     }
-}
+};
 
 const uploadChat = async (req, res) => {
     if (!req.file) {
@@ -48,10 +51,14 @@ const uploadChat = async (req, res) => {
     }
 
     const chatData = chatFile.getData().toString("utf8");
-    const chatName = path.basename(req.file.originalname, path.extname(req.file.originalname));
-    const messagePattern = /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
-    const attachmentPattern = /^‎<adjunto: (.*)>$/m;
-    const lines = chatData.split("\n");
+    const chatName = path.basename(
+        req.file.originalname,
+        path.extname(req.file.originalname)
+    );
+    const cleanData = chatData.replace(/[\u200E\u202A\u202C\u200F]/g, '');
+
+    const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2,4}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
+    const lines = cleanData.split("\n");
     const messages = [];
     let currentMessage = null;
 
@@ -61,20 +68,11 @@ const uploadChat = async (req, res) => {
             if (currentMessage) {
                 messages.push(currentMessage);
             }
-            const attachmentMatch = match[4].trim().match(attachmentPattern);
-            if (attachmentMatch) {
-                currentMessage = {
-                    date: `${match[1]} ${match[2]}`,
-                    author: match[3],
-                    url: attachmentMatch[1],
-                };
-            } else {
-                currentMessage = {
-                    date: `${match[1]} ${match[2]}`,
-                    author: match[3],
-                    content: match[4],
-                };
-            }
+            currentMessage = {
+                date: `${match[1]} ${match[2]}`,
+                author: match[3],
+                content: match[4],
+            };
         } else if (currentMessage && !line.match(messagePattern)) {
             currentMessage.content += `\n${line}`;
         }
@@ -85,9 +83,10 @@ const uploadChat = async (req, res) => {
     }
 
     const dateFirstMessage = messages.length > 0 ? messages[0].date : null;
-    const dateLastMessage = messages.length > 0 ? messages[messages.length - 1].date : null;
+    const dateLastMessage =
+        messages.length > 0 ? messages[messages.length - 1].date : null;
     const totalMessages = messages.length;
-    const totalAttachments = messages.filter(msg => msg.url).length;
+    const totalAttachments = messages.filter((msg) => msg.url).length;
 
     const chatDataForDB = {
         chatName: chatName,
@@ -95,7 +94,7 @@ const uploadChat = async (req, res) => {
         dateLastMessage: dateLastMessage,
         totalMessages: totalMessages,
         totalAttachments: totalAttachments,
-        messages: messages
+        messages: messages,
     };
 
     try {
@@ -120,4 +119,4 @@ module.exports = {
     getRoot,
     uploadChat,
     getChats,
-}
+};
