@@ -41,23 +41,23 @@ export type Chat = {
 
 export const columns: ColumnDef<Chat>[] = [
     {
-        accessorKey: "name",
+        accessorKey: "chatName",
         header: "Name",
     },
     {
-        accessorKey: "date_first_message",
+        accessorKey: "dateFirstMessage",
         header: "First message",
     },
     {
-        accessorKey: "date_last_message",
+        accessorKey: "dateLastMessage",
         header: "Last message",
     },
     {
-        accessorKey: "message_count",
+        accessorKey: "totalMessages",
         header: "Messages",
     },
     {
-        accessorKey: "attachment_count",
+        accessorKey: "totalAttachments",
         header: "Attachments",
     },
     {
