@@ -11,7 +11,7 @@ const uploadChat = (req, res) => {
         return res.status(400).send("No file uploaded.")
     }
 
-    const zip = new AdmZip(req.file.path)
+    const zip = new AdmZip(req.file.buffer)
     const zipEntries = zip.getEntries()
 
     let chatFile = null
@@ -27,6 +27,7 @@ const uploadChat = (req, res) => {
     }
 
     const chatData = chatFile.getData().toString("utf8")
+    const chatName = path.basename(req.file.originalname, path.extname(req.file.originalname))
     const messagePattern =
         /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/
     const lines = chatData.split("\n")
@@ -53,7 +54,12 @@ const uploadChat = (req, res) => {
         messages.push(currentMessage)
     }
 
-    res.json(messages.slice(0, 10))
+    const chatDataForDB = {
+        chatName: chatName,
+        messages: messages
+    }
+
+    res.json(chatDataForDB)
 }
 
 module.exports = {
