@@ -63,6 +63,7 @@ const uploadChat = async (req, res) => {
     let currentMessage = null;
 
     lines.forEach((line) => {
+        console.log("Line:", line);
         const match = line.match(messagePattern);
         if (match) {
             if (currentMessage) {
