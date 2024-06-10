@@ -20,11 +20,8 @@ app.use("/api", routes);
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-async function createDefaultCollection() {
+async function createDefaultCollection(database) {
     try {
-        await client.connect();
-        const database = client.db("wacbidb");
-
         // Check if the collection exists
         const collections = await database.listCollections({ name: "chats" }).toArray();
         if (collections.length === 0) {
@@ -35,12 +32,23 @@ async function createDefaultCollection() {
         }
     } catch (error) {
         console.error("Error creating default collection:", error);
-    } finally {
-        await client.close();
     }
 }
 
-app.listen(port, async () => {
-    console.log(`Server is running on http://localhost:${port}`);
-    await createDefaultCollection();
-});
+async function startServer() {
+    try {
+        await client.connect();
+        const database = client.db("wacbidb");
+        await createDefaultCollection(database);
+
+        app.locals.db = database;
+
+        app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
+        });
+    } catch (error) {
+        console.error("Error starting server:", error);
+    }
+}
+
+startServer();
