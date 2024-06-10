@@ -33,7 +33,8 @@ import {
 export type Chat = {
     id: string
     name: string
-    date: string
+    date_first_message: string
+    date_last_message: string
     message_count: number
     attachment_count: number
 }
@@ -44,8 +45,12 @@ export const columns: ColumnDef<Chat>[] = [
         header: "Name",
     },
     {
-        accessorKey: "date",
-        header: "Date",
+        accessorKey: "date_first_message",
+        header: "First message",
+    },
+    {
+        accessorKey: "date_last_message",
+        header: "Last message",
     },
     {
         accessorKey: "message_count",
