@@ -29,6 +29,7 @@ const uploadChat = (req, res) => {
     const chatData = chatFile.getData().toString("utf8")
     const chatName = path.basename(req.file.originalname, path.extname(req.file.originalname))
     const messagePattern = /^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/m
+    const attachmentPattern = /^<adjunto: (.*)>$/m
     const lines = chatData.split("\n")
     const messages = []
     let currentMessage = null
@@ -39,10 +40,19 @@ const uploadChat = (req, res) => {
             if (currentMessage) {
                 messages.push(currentMessage)
             }
-            currentMessage = {
-                date: `${match[1]} ${match[2]}`,
-                author: match[3],
-                content: match[4],
+            const attachmentMatch = match[4].match(attachmentPattern)
+            if (attachmentMatch) {
+                currentMessage = {
+                    date: `${match[1]} ${match[2]}`,
+                    author: match[3],
+                    url: attachmentMatch[1],
+                }
+            } else {
+                currentMessage = {
+                    date: `${match[1]} ${match[2]}`,
+                    author: match[3],
+                    content: match[4],
+                }
             }
         } else if (currentMessage) {
             currentMessage.content += `\n${line}`
