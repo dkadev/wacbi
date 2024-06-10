@@ -27,11 +27,19 @@ const uploadChat = (req, res) => {
   }
 
   const chatData = chatFile.getData().toString('utf8');
-  const messages = chatData.split('\n').slice(0, 10);
+  const messages = chatData.split('\n').slice(0, 10).map(line => {
+    const match = line.match(/^\[(\d{2}\/\d{2}\/\d{2}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/);
+    if (match) {
+      return {
+        date: `${match[1]} ${match[2]}`,
+        author: match[3],
+        content: match[4]
+      };
+    }
+    return null;
+  }).filter(message => message !== null);
 
-  console.log('First 10 messages:', messages);
-
-  res.send('File processed successfully!');
+  res.json(messages);
 };
 
 module.exports = {
