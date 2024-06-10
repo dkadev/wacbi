@@ -1,0 +1,36 @@
+services:
+    # app:
+    #   image: your-nextjs-app-image
+    #   ports:
+    #     - 3000:3000
+    #   depends_on:
+    # - nodejs-api
+
+    # api:
+    #   image: your-nodejs-api-image
+    #   ports:
+    #     - 8080:8080
+    #   depends_on:
+    #     - mongodb
+
+    mongodb:
+        container_name: wacbi-mongodb
+        image: mongo
+        restart: always
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME
+            - MONGO_INITDB_ROOT_PASSWORD
+        ports:
+            - 27017:27017
+        volumes:
+            - ./mongo:/data/db
+
+    # minio:
+    #     image: minio/minio
+    #     ports:
+    #         - 9000:9000
+    #     environment:
+    #         - MINIO_ACCESS_KEY
+    #         - MINIO_SECRET_KEY
+    #     volumes:
+    #         - ./data:/data
