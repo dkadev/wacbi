@@ -24,7 +24,7 @@ Backend:
 
 - Nodejs Express
 - MongoDB
-- Minio
+- Minio?
 
 ## To Do
 
@@ -36,10 +36,16 @@ Backend:
     - [x] Create Nodejs Express project.
     - [x] Set up a file upload endpoint.
     - [x] Extract the chat data from the uploaded `.zip` file.
-    - [ ] Parse the data and store it in a MongoDB database.
+    - [x] Parse the data and store it in a MongoDB database. NOTE: Some uploads not working and Some messages not splitting properly.
     - [ ] Store any file attachments in a suitable location (e.g., the filesystem or a cloud storage service).
 3. Retrieving and Displaying Chat Data:
-    - [ ] Fetch the chat data from the API.
+    - [x] Fetch the chat data from the API.
+    - [x] Display the chat data in the frontend.
+    - [ ] Implement filtering functionality on table.
+    - [ ] Implement pagination functionality on table.
+    - [ ] Implement CRUD functionality on table.
+    - [ ] Implement search functionality on chat.
+    - [ ] Implement attachment viewing functionality on chat.
 4. Docker Setup:
     - [ ] Write Dockerfiles to package application.
     - [ ] Set up a `docker-compose.yml` file to define the services required for application.
