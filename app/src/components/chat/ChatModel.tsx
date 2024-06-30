@@ -31,6 +31,7 @@ import {
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Chat = {
+    _id(_id: any): void
     id: string
     name: string
     date_first_message: string
@@ -65,6 +66,8 @@ export const columns: ColumnDef<Chat>[] = [
         cell: ({ row }) => {
             const chat = row.original
 
+            console.log(chat)
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -77,13 +80,13 @@ export const columns: ColumnDef<Chat>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() =>
-                                navigator.clipboard.writeText(chat.id)
+                                navigator.clipboard.writeText(chat._id.toString())
                             }
                         >
                             Copy ID
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href={`/chats/${chat.id}`}>View chat</Link>
+                            <Link href={`/chats/${chat._id}`}>View chat</Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
