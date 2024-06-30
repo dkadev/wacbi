@@ -1,5 +1,6 @@
 const path = require("path");
 const AdmZip = require("adm-zip");
+const { ObjectId } = require('mongodb');
 
 const getRoot = (req, res) => {
     res.send("Hello, this is the root of the API!");
@@ -98,8 +99,25 @@ const uploadChat = async (req, res) => {
     }
 };
 
+const getChatData = async (req, res) => {
+    const chatId = req.params.id;
+    const database = req.app.locals.db;
+    try {
+        const collection = database.collection("chats");
+        const chat = await collection.findOne({ _id: new ObjectId(chatId) });
+        if (!chat) {
+            return res.status(404).send("Chat not found.");
+        }
+        res.json(chat);
+    } catch (error) {
+        console.error("Error fetching chat messages from MongoDB:", error);
+        res.status(500).send("Error fetching chat messages from MongoDB.");
+    }
+};
+
 module.exports = {
     getRoot,
+    getChatData,
     getRoot,
     uploadChat,
     getChats,
