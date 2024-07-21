@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 interface ChatBubbleProps {
@@ -37,12 +38,28 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, author, sender, date }
             <div className={`${sender ? 'bg-primary rounded-lg p-3 max-w-[75%] text-primary-foreground' : 'bg-muted rounded-lg p-3 max-w-[75%]'}`}>
                 <p className="font-medium" style={sender ? {} : { color: authorColor }}>{sender ? "You" : author}</p>
                 <div>
-                    {message.split('\n').map((line, index) => (
-                        <React.Fragment key={index}>
-                            {line}
-                            <br />
-                        </React.Fragment>
-                    ))}
+                    {
+                        message.startsWith("http://localhost:9000/") ? (
+                            message.endsWith('.mp4') ? (
+                                <video controls>
+                                  <source src={message} type="video/mp4" />
+                                  Your browser does not support the video tag.
+                                </video>
+                              ) : 
+                              <Image src={message} alt={message} width={0} height={0} sizes="100vw" style={{ width: '100%', height: 'auto' }}/>
+                        ) :
+                            message.split('\n').map((line, index) => (
+                                <React.Fragment key={index}>
+                                    {
+                                        // If message starts with "http" or "https", render it as a link
+                                        line.startsWith("http") ? (
+                                            <a href={line} target="_blank" rel="noreferrer" className="underline">{line}</a>
+                                        ) : line
+                                    }
+                                    <br />
+                                </React.Fragment>
+                            ))
+                    }
                 </div>
                 <small className="text-xs">{date}</small>
             </div>

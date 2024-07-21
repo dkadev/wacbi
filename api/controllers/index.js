@@ -32,6 +32,27 @@ const uploadChat = async (req, res) => {
         console.log("Entry found in zip:", entry.entryName);
         if (entry.entryName === "_chat.txt") {
             chatFile = entry;
+        } else {
+            // Save the attachment to Minio
+            const attachmentName = path.basename(entry.entryName);
+            const attachmentBuffer = entry.getData();
+            console.log("Attachment found:", attachmentName);
+            // Save the attachment to Minio
+            req.app.locals.minioClient.putObject(
+                req.app.locals.minioBucket,
+                attachmentName,
+                attachmentBuffer,
+                (err, etag) => {
+                    if (err) {
+                        console.error(
+                            "Error uploading attachment to Minio:",
+                            err
+                        );
+                    } else {
+                        console.log("Attachment uploaded to Minio:", etag);
+                    }
+                }
+            );
         }
     });
 
@@ -47,6 +68,7 @@ const uploadChat = async (req, res) => {
     const cleanData = chatData.replace(/[\u200E\u202A\u202C\u200F]/g, '');
 
     const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2}), (\d{1,2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
+    const attachmentPattern = /<adjunto: (.*\.(webp|jpg|mp4|jpeg|png|gif))>/;
     const lines = cleanData.split("\n");
     const messages = [];
     let currentMessage = null;
@@ -54,15 +76,28 @@ const uploadChat = async (req, res) => {
     lines.forEach((line) => {
         console.log("Line:", line);
         const match = line.match(messagePattern);
+
         if (match) {
             if (currentMessage) {
                 messages.push(currentMessage);
             }
-            currentMessage = {
-                date: `${match[1]} ${match[2]}`,
-                author: match[3],
-                content: match[4],
-            };
+            // Check if the message has an attachment and construct the message content as a minio URL
+            const attachmentMatch = match[4].match(attachmentPattern);
+            if (attachmentMatch) {
+                const attachmentName = attachmentMatch[1];
+                const attachmentUrl = `${req.app.locals.minioURL}${attachmentName}`;
+                currentMessage = {
+                    date: `${match[1]} ${match[2]}`,
+                    author: match[3],
+                    content: attachmentUrl,
+                };
+            } else {
+                currentMessage = {
+                    date: `${match[1]} ${match[2]}`,
+                    author: match[3],
+                    content: match[4],
+                };
+            }
         } else if (currentMessage && !line.match(messagePattern)) {
             currentMessage.content += `\n${line}`;
         }
