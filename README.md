@@ -36,8 +36,8 @@ Backend:
     - [x] Create Nodejs Express project.
     - [x] Set up a file upload endpoint.
     - [x] Extract the chat data from the uploaded `.zip` file.
-    - [x] Parse the data and store it in a MongoDB database. NOTE: Some uploads not working and Some messages not splitting properly.
-    - [ ] Store any file attachments in a suitable location (e.g., the filesystem or a cloud storage service).
+    - [x] Parse the data and store it in a MongoDB database.
+    - [x] Store any file attachments in a suitable location (e.g., the filesystem or a cloud storage service).
 3. Retrieving and Displaying Chat Data:
     - [x] Fetch the chat data from the API.
     - [x] Display the chat data in the frontend.
