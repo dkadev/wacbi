@@ -46,7 +46,7 @@ const uploadChat = async (req, res) => {
     );
     const cleanData = chatData.replace(/[\u200E\u202A\u202C\u200F]/g, '');
 
-    const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2,4}), (\d{2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
+    const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2}), (\d{1,2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
     const lines = cleanData.split("\n");
     const messages = [];
     let currentMessage = null;
