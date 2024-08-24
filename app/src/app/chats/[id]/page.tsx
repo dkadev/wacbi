@@ -7,7 +7,6 @@ async function getChat(id: string): Promise<any>{
         throw new Error('Failed to fetch messages');
     }
     const data = await res.json(); // Read the response body once
-    console.log(data);
     return data;
 }
 

@@ -66,8 +66,6 @@ export const columns: ColumnDef<Chat>[] = [
         cell: ({ row }) => {
             const chat = row.original
 
-            console.log(chat)
-
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
