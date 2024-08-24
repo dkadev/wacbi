@@ -125,7 +125,7 @@ const uploadChat = async (req, res) => {
         const collection = database.collection("chats");
         await collection.insertOne(chatDataForDB);
         console.log("Chat data inserted into MongoDB.");
-        res.json(chatDataForDB);
+        res.status(201).send("Chat data inserted into database.");
     } catch (error) {
         console.error("Error inserting chat data into MongoDB:", error);
         res.status(500).send("Error inserting chat data into MongoDB.");
