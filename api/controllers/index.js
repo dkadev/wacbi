@@ -29,14 +29,14 @@ const uploadChat = async (req, res) => {
     let chatFile = null;
 
     zipEntries.forEach((entry) => {
-        console.log("Entry found in zip:", entry.entryName);
         if (entry.entryName === "_chat.txt") {
             chatFile = entry;
+            console.log("Proccessing chat file:", entry.entryName);
         } else {
             // Save the attachment to Minio
             const attachmentName = path.basename(entry.entryName);
             const attachmentBuffer = entry.getData();
-            console.log("Attachment found:", attachmentName);
+            console.log("Proccessing attachment:", attachmentName);
             // Save the attachment to Minio
             req.app.locals.minioClient.putObject(
                 req.app.locals.minioBucket,
@@ -49,7 +49,7 @@ const uploadChat = async (req, res) => {
                             err
                         );
                     } else {
-                        console.log("Attachment uploaded to Minio:", etag);
+                        // console.log("Attachment uploaded to Minio:", etag);
                     }
                 }
             );
@@ -67,16 +67,14 @@ const uploadChat = async (req, res) => {
     );
     const cleanData = chatData.replace(/[\u200E\u202A\u202C\u200F]/g, '');
 
-    const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2}), (\d{1,2}:\d{2}:\d{2})\] (.*?): (.*)$/m;
+    const messagePattern = /^\[(\d{1,2}\/\d{1,2}\/\d{2})(?:,? ?(\d{1,2}:\d{2}:\d{2}))\] (.*?): (.*)$/m;
     const attachmentPattern = /<adjunto: (.*\.(webp|jpg|mp4|jpeg|png|gif))>/;
     const lines = cleanData.split("\n");
     const messages = [];
     let currentMessage = null;
 
     lines.forEach((line) => {
-        console.log("Line:", line);
         const match = line.match(messagePattern);
-
         if (match) {
             if (currentMessage) {
                 messages.push(currentMessage);
@@ -111,7 +109,7 @@ const uploadChat = async (req, res) => {
     const dateLastMessage =
         messages.length > 0 ? messages[messages.length - 1].date : null;
     const totalMessages = messages.length;
-    const totalAttachments = messages.filter((msg) => msg.url).length;
+    const totalAttachments = messages.filter((m) => m.content.startsWith(req.app.locals.minioURL)).length;
 
     const chatDataForDB = {
         chatName: chatName,
@@ -121,6 +119,8 @@ const uploadChat = async (req, res) => {
         totalAttachments: totalAttachments,
         messages: messages,
     };
+
+    console.log("Chat data extracted:", chatName, "\ntotalMessages:", totalMessages, "\ntotalAttachments:", totalAttachments);
 
     const database = req.app.locals.db;
     try {
@@ -153,7 +153,6 @@ const getChatData = async (req, res) => {
 module.exports = {
     getRoot,
     getChatData,
-    getRoot,
     uploadChat,
     getChats,
 };
