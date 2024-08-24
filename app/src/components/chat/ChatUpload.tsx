@@ -31,14 +31,13 @@ const ChatUpload: React.FC = () => {
                     body: formData,
                 });
 
+                const result = await response.text();
                 if (response.ok) {
-                    setIsLoading(false);
-                    const result = await response.text();
                     console.log(result); // Log the response from the server
                     // Close the modal
                     document.querySelector('button[aria-label="Close"]')?.click();
                 }
-                console.log(result); // Log the response from the server
+                setIsLoading(false);
             } catch (error) {
                 setIsLoading(false);
                 console.error('Error uploading file:', error);
@@ -49,7 +48,7 @@ const ChatUpload: React.FC = () => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>
+                <Button disabled={isLoading}>
                     {isLoading ? "Uploading..." : <><Upload className="mr-2 h-4 w-4" /> Upload</>}
                 </Button>
             </DialogTrigger>
