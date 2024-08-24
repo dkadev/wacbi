@@ -148,11 +148,35 @@ const uploadChat = async (req, res) => {
     }
 };
 
+const deleteChat = async (req, res) => {
+    const chatId = req.params.id;
+    console.log("Received chat ID for deletion:", chatId);
 
+    if (!ObjectId.isValid(chatId)) {
+        return res.status(400).send("Invalid chat ID format.");
+    }
+
+    const database = req.app.locals.db;
+    try {
+        const collection = database.collection("chats");
+        const chat = await collection.findOne({ _id: new ObjectId(chatId) });
+
+        if (!chat) {
+            return res.status(404).send("Chat not found.");
+        }
+
+        await collection.deleteOne({ _id: new ObjectId(chatId) });
+        res.status(200).send("Chat deleted.");
+    } catch (error) {
+        console.error("Error deleting chat from MongoDB:", error);
+        res.status(500).send("Error deleting chat from MongoDB.");
+    }
+};
 
 module.exports = {
     getRoot,
     getChats,
     getChatData,
     uploadChat,
+    deleteChat,
 };
