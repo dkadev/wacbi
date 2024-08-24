@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { Upload } from "lucide-react"
 
@@ -16,10 +16,12 @@ import { Input } from "@/components/ui/input"
 const ChatUpload: React.FC = () => {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (fileInputRef.current && fileInputRef.current.files) {
+            setIsLoading(true);
             const formData = new FormData();
             formData.append('file', fileInputRef.current.files[0]);
 
@@ -29,9 +31,16 @@ const ChatUpload: React.FC = () => {
                     body: formData,
                 });
 
-                const result = await response.text();
+                if (response.ok) {
+                    setIsLoading(false);
+                    const result = await response.text();
+                    console.log(result); // Log the response from the server
+                    // Close the modal
+                    document.querySelector('button[aria-label="Close"]')?.click();
+                }
                 console.log(result); // Log the response from the server
             } catch (error) {
+                setIsLoading(false);
                 console.error('Error uploading file:', error);
             }
         }
@@ -41,7 +50,7 @@ const ChatUpload: React.FC = () => {
         <Dialog>
             <DialogTrigger asChild>
                 <Button>
-                    <Upload className="mr-2 h-4 w-4" /> Upload
+                    {isLoading ? "Uploading..." : <><Upload className="mr-2 h-4 w-4" /> Upload</>}
                 </Button>
             </DialogTrigger>
             <DialogContent>
