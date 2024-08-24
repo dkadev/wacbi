@@ -89,7 +89,7 @@ export const columns: ColumnDef<Chat>[] = [
                         <DropdownMenuSeparator />
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="link">
+                                <Button variant="destructive">
                                     <Trash className="mr-2 h-4 w-4" /> Delete
                                 </Button>
                             </AlertDialogTrigger>
