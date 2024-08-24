@@ -9,9 +9,10 @@ A web tool to store and visualize Whatsapp Chat backups.
 - Store messages in MongoDB.
 - Store attachments in Minio.
 - View chat history.
-- Search for messages.
 - Search for chats.
-- Filter chats by date.
+- Search for messages. (Soon)
+- Filter chats by date. (Soon)
+- Dockerized setup. (Soon)
 
 ## Stack
 
@@ -24,7 +25,7 @@ Backend:
 
 - Nodejs Express
 - MongoDB
-- Minio?
+- Minio
 
 ## To Do
 
@@ -41,11 +42,11 @@ Backend:
 3. Retrieving and Displaying Chat Data:
     - [x] Fetch the chat data from the API.
     - [x] Display the chat data in the frontend.
-    - [ ] Implement filtering functionality on table.
-    - [ ] Implement pagination functionality on table.
-    - [ ] Implement CRUD functionality on table.
-    - [ ] Implement search functionality on chat.
-    - [ ] Implement attachment viewing functionality on chat.
+    - [ ] Filtering functionality on table.
+    - [ ] Pagination functionality on table.
+    - [x] CRUD functionality on table.
+    - [ ] Search functionality on chat.
+    - [x] Attachment viewing functionality on chat.
 4. Docker Setup:
     - [ ] Write Dockerfiles to package application.
-    - [ ] Set up a `docker-compose.yml` file to define the services required for application.
+    - [x] Set up a `docker-compose.yml` file to define the services required for application.
