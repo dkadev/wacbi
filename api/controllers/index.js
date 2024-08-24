@@ -48,8 +48,6 @@ const uploadChat = async (req, res) => {
                             "Error uploading attachment to Minio:",
                             err
                         );
-                    } else {
-                        // console.log("Attachment uploaded to Minio:", etag);
                     }
                 }
             );

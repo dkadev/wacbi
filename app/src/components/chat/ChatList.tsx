@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 async function getChats(): Promise<Chat[]> {
     const response = await fetch("http://localhost:8080/api/chats")
     const data = await response.json()
-    console.log(data)
     return data
 }
 
