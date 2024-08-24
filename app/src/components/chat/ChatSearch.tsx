@@ -12,12 +12,12 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ table }) => {
         <Input
             placeholder="Search chat..."
             value={
-                (table.getColumn("name")?.getFilterValue() as string) ??
+                (table.getColumn("chatName")?.getFilterValue() as string) ??
                 ""
             }
             onChange={(event) =>
                 table
-                    .getColumn("name")
+                    .getColumn("chatName")
                     ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
