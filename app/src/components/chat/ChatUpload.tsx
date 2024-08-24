@@ -17,10 +17,11 @@ const ChatUpload: React.FC = () => {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (fileInputRef.current && fileInputRef.current.files) {
+        if (fileInputRef.current?.files) {
             setIsLoading(true);
             const formData = new FormData();
             formData.append('file', fileInputRef.current.files[0]);
@@ -31,12 +32,10 @@ const ChatUpload: React.FC = () => {
                     body: formData,
                 });
 
-                const result = await response.text();
                 if (response.ok) {
-                    console.log(result); // Log the response from the server
-                    // Close the modal
-                    document.querySelector('button[aria-label="Close"]')?.click();
+                    setOpen(false);
                 }
+                
                 setIsLoading(false);
             } catch (error) {
                 setIsLoading(false);
@@ -46,10 +45,10 @@ const ChatUpload: React.FC = () => {
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button disabled={isLoading}>
-                    {isLoading ? "Uploading..." : <><Upload className="mr-2 h-4 w-4" /> Upload</>}
+                    <Upload className="mr-2 h-4 w-4" /> Upload
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -70,10 +69,14 @@ const ChatUpload: React.FC = () => {
                             Max file size: 100MB
                         </p>
                         <div className="flex items-center justify-center my-2">
+                            {isLoading ? "Uploading chat file..." : 
+                            
                             <Button type="submit">
                                 <Upload className="mr-2 h-4 w-4" />{" "}
                                 Upload file
                             </Button>
+                            }
+
                         </div>
                     </form>
                 </DialogHeader>
