@@ -6,7 +6,6 @@ import { MoreHorizontal, Trash } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
 
 import {
     DropdownMenu,
@@ -66,12 +65,10 @@ export const columns: ColumnDef<Chat>[] = [
     id: "actions",
     cell: ({ row }) => {
         const chat = row.original
-        const [isDeleting, setIsDeleting] = useState(false)
 
         const handleDelete = async () => {
-            setIsDeleting(true)
             try {
-                const response = await fetch(`/api/chats/${chat._id}`, {
+                const response = await fetch(`http://localhost:8080/api/chats/${chat._id}`, {
                     method: "DELETE",
                 })
                 if (!response.ok) {
@@ -81,8 +78,6 @@ export const columns: ColumnDef<Chat>[] = [
                 // Optionally, refresh the data or update the UI
             } catch (error) {
                 console.error("Error deleting chat:", error)
-            } finally {
-                setIsDeleting(false)
             }
         }
 
@@ -109,7 +104,7 @@ export const columns: ColumnDef<Chat>[] = [
                     <DropdownMenuSeparator />
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="destructive" disabled={isDeleting}>
+                            <Button variant="destructive">
                                 <Trash className="mr-2 h-4 w-4" /> Delete
                             </Button>
                         </AlertDialogTrigger>
