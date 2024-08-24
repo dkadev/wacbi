@@ -6,6 +6,7 @@ import { MoreHorizontal, Trash } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 import {
     DropdownMenu,
@@ -61,62 +62,81 @@ export const columns: ColumnDef<Chat>[] = [
         accessorKey: "totalAttachments",
         header: "Attachments",
     },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-            const chat = row.original
+{
+    id: "actions",
+    cell: ({ row }) => {
+        const chat = row.original
+        const [isDeleting, setIsDeleting] = useState(false)
 
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() =>
-                                navigator.clipboard.writeText(chat._id.toString())
-                            }
-                        >
-                            Copy ID
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Link href={`/chats/${chat._id}`}>View chat</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive">
-                                    <Trash className="mr-2 h-4 w-4" /> Delete
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Are you absolutely sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action cannot be undone. This will
-                                        permanently delete chat and
-                                        remove related data from database.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction>
-                                        Continue
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        const handleDelete = async () => {
+            setIsDeleting(true)
+            try {
+                const response = await fetch(`/api/chats/${chat._id}`, {
+                    method: "DELETE",
+                })
+                if (!response.ok) {
+                    throw new Error("Failed to delete chat")
+                }
+                console.log("Chat deleted successfully")
+                // Optionally, refresh the data or update the UI
+            } catch (error) {
+                console.error("Error deleting chat:", error)
+            } finally {
+                setIsDeleting(false)
+            }
+        }
+
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                        onClick={() =>
+                            navigator.clipboard.writeText(chat._id.toString())
+                        }
+                    >
+                        Copy ID
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <Link href={`/chats/${chat._id}`}>View chat</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" disabled={isDeleting}>
+                                <Trash className="mr-2 h-4 w-4" /> Delete
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete chat and
+                                    remove related data from database.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                    Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDelete}>
+                                    Continue
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        )
     },
+},
 ]
